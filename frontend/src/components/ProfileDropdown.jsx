@@ -1,21 +1,24 @@
 import { useState, useEffect, useRef, memo } from 'react'
-import { API_BASE_URL } from '../utils/constants'
+import { API_BASE_URL, LS_KEYS } from '../utils/constants'
 
 function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
   const [profileData, setProfileData] = useState(null)
   const [summaryData, setSummaryData] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Local display states (visual only, no persistence)
-  const [displayName, setDisplayName] = useState(userName)
-  const [displayCity, setDisplayCity] = useState('City Not Set')
+  // Display states — initialized from localStorage (source of truth), then API
+  const [displayName, setDisplayName] = useState(() => localStorage.getItem(LS_KEYS.USER_NAME) || userName)
+  const [displayCity, setDisplayCity] = useState(() => localStorage.getItem(LS_KEYS.USER_CITY) || 'City Not Set')
 
   // Edit inline states
   const [isEditingName, setIsEditingName] = useState(false)
-  const [draftName, setDraftName] = useState(userName)
+  const [draftName, setDraftName] = useState(displayName)
 
   const [isEditingCity, setIsEditingCity] = useState(false)
   const [draftCity, setDraftCity] = useState('')
+
+  // Theme toggle
+  const [currentTheme, setCurrentTheme] = useState(() => localStorage.getItem(LS_KEYS.THEME) || 'light')
 
   const dropdownRef = useRef(null)
 
@@ -43,7 +46,7 @@ function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
     }
   }, [onClose])
 
-  // Fetch profile and summary
+  // Fetch profile and summary from existing APIs
   useEffect(() => {
     let active = true
     async function loadProfile() {
@@ -52,13 +55,22 @@ function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
         if (res.ok && active) {
           const data = await res.json()
           setProfileData(data)
-          if (data.name) {
+          // Only use API data if localStorage doesn't already have overrides
+          const storedName = localStorage.getItem(LS_KEYS.USER_NAME)
+          const storedCity = localStorage.getItem(LS_KEYS.USER_CITY)
+          if (data.name && !storedName) {
             setDisplayName(data.name)
             setDraftName(data.name)
           }
           if (data.city) {
-            setDisplayCity(data.city)
-            setDraftCity(data.city)
+            // If no locally-overridden city, use the one from DB
+            if (!storedCity) {
+              setDisplayCity(data.city)
+              setDraftCity(data.city)
+              // Persist the API city to localStorage so Location page picks it up
+              localStorage.setItem(LS_KEYS.USER_CITY, data.city)
+              localStorage.setItem('userCity', data.city) // for Location.jsx compat
+            }
           }
         }
       } catch (err) {
@@ -88,6 +100,39 @@ function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
     }
   }, [userId])
 
+  // Name save handler — persists to localStorage & dispatches sync event
+  const handleSaveName = () => {
+    const trimmed = draftName.trim()
+    if (trimmed) {
+      setDisplayName(trimmed)
+      localStorage.setItem(LS_KEYS.USER_NAME, trimmed)
+      window.dispatchEvent(new Event('profileUpdated'))
+    }
+    setIsEditingName(false)
+  }
+
+  // City save handler — persists to localStorage & dispatches sync event
+  const handleSaveCity = () => {
+    const trimmed = draftCity.trim()
+    const newCity = trimmed || 'City Not Set'
+    setDisplayCity(newCity)
+    if (trimmed) {
+      localStorage.setItem(LS_KEYS.USER_CITY, trimmed)
+      localStorage.setItem('userCity', trimmed) // for Location.jsx compat
+    }
+    window.dispatchEvent(new Event('profileUpdated'))
+    setIsEditingCity(false)
+  }
+
+  // Theme toggle handler
+  const toggleTheme = () => {
+    const newTheme = currentTheme === 'light' ? 'dark' : 'light'
+    setCurrentTheme(newTheme)
+    localStorage.setItem(LS_KEYS.THEME, newTheme)
+    document.documentElement.setAttribute('data-theme', newTheme === 'dark' ? 'dark' : '')
+    window.dispatchEvent(new Event('themeUpdated'))
+  }
+
   const showStreak = summaryData ? (summaryData.streak_days ?? streak) : streak
   const badgesVal = summaryData ? `${summaryData.badges_count} / 6` : 'N/A'
   const xpVal = summaryData ? (summaryData.total_xp ?? 'N/A') : (profileData ? (profileData.xp ?? 'N/A') : 'N/A')
@@ -101,7 +146,7 @@ function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
           top: calc(100% + 12px);
           right: 0;
           width: 320px;
-          background: var(--clay-white);
+          background: var(--bg-card);
           border-radius: 20px;
           box-shadow: var(--s-card);
           border: 2px solid rgba(109, 191, 116, 0.3);
@@ -153,7 +198,7 @@ function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          background: rgba(255, 255, 255, 0.5);
+          background: var(--bg-deeper);
           padding: 8px 12px;
           border-radius: var(--r-sm);
           border: 1px solid rgba(109, 191, 116, 0.1);
@@ -202,6 +247,48 @@ function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
           font-size: 12px;
           min-width: 32px;
         }
+
+        .profile-dropdown-theme-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 8px 0;
+        }
+
+        .profile-dropdown-theme-toggle {
+          position: relative;
+          width: 56px;
+          height: 30px;
+          border-radius: 15px;
+          border: none;
+          cursor: pointer;
+          transition: background 0.3s ease;
+          box-shadow: var(--s-input);
+          display: flex;
+          align-items: center;
+          padding: 0 4px;
+        }
+        .profile-dropdown-theme-toggle.light {
+          background: var(--clay-lime);
+        }
+        .profile-dropdown-theme-toggle.dark {
+          background: #3a3a5c;
+        }
+        .profile-dropdown-theme-toggle .theme-knob {
+          width: 22px;
+          height: 22px;
+          border-radius: 50%;
+          background: white;
+          box-shadow: 2px 2px 4px rgba(0,0,0,0.15);
+          transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 12px;
+        }
+        .profile-dropdown-theme-toggle.dark .theme-knob {
+          transform: translateX(26px);
+        }
       `}</style>
 
       <div className="profile-dropdown" ref={dropdownRef} role="menu" aria-label="Profile menu">
@@ -213,19 +300,16 @@ function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
                 type="text"
                 value={draftName}
                 onChange={(e) => setDraftName(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSaveName() }}
                 className="profile-dropdown-inline-input"
                 autoFocus
                 placeholder="Name"
+                maxLength={50}
               />
               <button
-                onClick={() => {
-                  if (draftName.trim()) {
-                    setDisplayName(draftName.trim())
-                  }
-                  setIsEditingName(false)
-                }}
+                onClick={handleSaveName}
                 className="clay-btn btn-sm profile-dropdown-edit-btn"
-                aria-label="Save name visual changes"
+                aria-label="Save name"
               >
                 ✓
               </button>
@@ -252,17 +336,16 @@ function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
                 type="text"
                 value={draftCity}
                 onChange={(e) => setDraftCity(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleSaveCity() }}
                 className="profile-dropdown-inline-input"
                 autoFocus
                 placeholder="City"
+                maxLength={100}
               />
               <button
-                onClick={() => {
-                  setDisplayCity(draftCity.trim() || 'City Not Set')
-                  setIsEditingCity(false)
-                }}
+                onClick={handleSaveCity}
                 className="clay-btn btn-sm profile-dropdown-edit-btn"
-                aria-label="Save city visual changes"
+                aria-label="Save city"
               >
                 ✓
               </button>
@@ -344,7 +427,26 @@ function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
 
         <hr className="profile-dropdown-divider" />
 
-        {/* Section 4: Logout */}
+        {/* Section 4: Theme Toggle */}
+        <div className="profile-dropdown-theme-row">
+          <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-mid)' }}>
+            {currentTheme === 'dark' ? '🌙 Dark Mode' : '☀️ Light Mode'}
+          </span>
+          <button
+            className={`profile-dropdown-theme-toggle ${currentTheme}`}
+            onClick={toggleTheme}
+            aria-label={`Switch to ${currentTheme === 'dark' ? 'light' : 'dark'} mode`}
+            role="menuitem"
+          >
+            <span className="theme-knob">
+              {currentTheme === 'dark' ? '🌙' : '☀️'}
+            </span>
+          </button>
+        </div>
+
+        <hr className="profile-dropdown-divider" />
+
+        {/* Section 5: Logout */}
         <button
           onClick={onLogout}
           className="clay-btn btn-sm btn-red btn-full"

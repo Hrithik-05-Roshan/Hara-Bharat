@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Navbar from './components/Navbar'
 import EcoMitraChat from './components/EcoMitraChat'
 import Home from './pages/Home'
@@ -11,9 +11,19 @@ import Insights from './pages/Insights'
 import LocationPage from './pages/Location'
 import { LS_KEYS } from './utils/constants'
 
+// Apply saved theme before first paint to prevent flash
+;(function initTheme() {
+  const saved = localStorage.getItem(LS_KEYS.THEME)
+  if (saved === 'dark') {
+    document.documentElement.setAttribute('data-theme', 'dark')
+  }
+})()
+
 function App() {
   const [userId, setUserId] = useState(() => localStorage.getItem(LS_KEYS.USER_ID) || '')
   const [userName, setUserName] = useState(() => localStorage.getItem(LS_KEYS.USER_NAME) || '')
+  const [userCity, setUserCity] = useState(() => localStorage.getItem(LS_KEYS.USER_CITY) || '')
+  const [theme, setTheme] = useState(() => localStorage.getItem(LS_KEYS.THEME) || 'light')
 
   const handleAuth = useCallback((id, name) => {
     localStorage.setItem(LS_KEYS.USER_ID, id)
@@ -21,6 +31,45 @@ function App() {
     setUserId(id)
     setUserName(name)
   }, [])
+
+  // Listen for profileUpdated events dispatched by ProfileDropdown or other components
+  useEffect(() => {
+    const handleProfileUpdate = () => {
+      const storedName = localStorage.getItem(LS_KEYS.USER_NAME) || ''
+      const storedCity = localStorage.getItem(LS_KEYS.USER_CITY) || ''
+      setUserName(storedName)
+      setUserCity(storedCity)
+    }
+
+    const handleThemeUpdate = () => {
+      const storedTheme = localStorage.getItem(LS_KEYS.THEME) || 'light'
+      setTheme(storedTheme)
+      document.documentElement.setAttribute('data-theme', storedTheme === 'dark' ? 'dark' : '')
+    }
+
+    window.addEventListener('profileUpdated', handleProfileUpdate)
+    window.addEventListener('themeUpdated', handleThemeUpdate)
+
+    return () => {
+      window.removeEventListener('profileUpdated', handleProfileUpdate)
+      window.removeEventListener('themeUpdated', handleThemeUpdate)
+    }
+  }, [])
+
+  // Sync theme attribute on mount and when theme changes
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme === 'dark' ? 'dark' : '')
+  }, [theme])
+
+  // When user first logs in via onboarding (which sets city), pick it up
+  useEffect(() => {
+    if (userId) {
+      const storedCity = localStorage.getItem(LS_KEYS.USER_CITY) || localStorage.getItem('userCity') || ''
+      if (storedCity && storedCity !== userCity) {
+        setUserCity(storedCity)
+      }
+    }
+  }, [userId])
 
   const isLoggedIn = Boolean(userId)
 

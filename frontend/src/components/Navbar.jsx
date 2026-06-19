@@ -1,6 +1,7 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useState, useEffect, useCallback } from 'react'
 import ProfileDropdown from './ProfileDropdown'
+import { LS_KEYS } from '../utils/constants'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
@@ -17,6 +18,12 @@ function Navbar({ userId, userName, onLogout }) {
   const navigate = useNavigate()
   const [streak, setStreak] = useState(0)
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const [displayName, setDisplayName] = useState(userName)
+
+  // Sync displayName when userName prop changes (from App.jsx)
+  useEffect(() => {
+    setDisplayName(userName)
+  }, [userName])
 
   const fetchStreak = useCallback(async () => {
     if (!userId) return
@@ -38,12 +45,22 @@ function Navbar({ userId, userName, onLogout }) {
     const handleUpdate = () => {
       fetchStreak()
     }
+
+    // Listen for profile changes to update display name immediately
+    const handleProfileUpdate = () => {
+      const storedName = localStorage.getItem(LS_KEYS.USER_NAME) || ''
+      if (storedName) setDisplayName(storedName)
+      fetchStreak() // Also refresh streak in case data changed
+    }
+
     window.addEventListener('activityLogged', handleUpdate)
     window.addEventListener('streakUpdated', handleUpdate)
+    window.addEventListener('profileUpdated', handleProfileUpdate)
 
     return () => {
       window.removeEventListener('activityLogged', handleUpdate)
       window.removeEventListener('streakUpdated', handleUpdate)
+      window.removeEventListener('profileUpdated', handleProfileUpdate)
     }
   }, [fetchStreak])
 
@@ -84,7 +101,7 @@ function Navbar({ userId, userName, onLogout }) {
               onClick={() => setIsDropdownOpen(prev => !prev)}
               className="clay-pill pill-mint"
               style={{ cursor: 'pointer', userSelect: 'none' }}
-              aria-label={`Logged in as ${userName}, streak is ${streak} days. Click to open profile menu.`}
+              aria-label={`Logged in as ${displayName}, streak is ${streak} days. Click to open profile menu.`}
               role="button"
               tabIndex={0}
               onKeyDown={(e) => {
@@ -94,12 +111,12 @@ function Navbar({ userId, userName, onLogout }) {
                 }
               }}
             >
-              👤 {userName} | 🔥 {streak} din
+              👤 {displayName} | 🔥 {streak} din
             </span>
             {isDropdownOpen && (
               <ProfileDropdown
                 userId={userId}
-                userName={userName}
+                userName={displayName}
                 streak={streak}
                 onLogout={handleLogoutClick}
                 onClose={() => setIsDropdownOpen(false)}

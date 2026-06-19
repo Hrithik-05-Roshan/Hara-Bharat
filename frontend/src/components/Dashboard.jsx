@@ -148,9 +148,13 @@ function Dashboard({ userId, userName }) {
       fetchDashboardData()
     }
     window.addEventListener('activityLogged', handleUpdate)
+    window.addEventListener('streakUpdated', handleUpdate)
+    window.addEventListener('profileUpdated', handleUpdate)
 
     return () => {
       window.removeEventListener('activityLogged', handleUpdate)
+      window.removeEventListener('streakUpdated', handleUpdate)
+      window.removeEventListener('profileUpdated', handleUpdate)
     }
   }, [userId])
 

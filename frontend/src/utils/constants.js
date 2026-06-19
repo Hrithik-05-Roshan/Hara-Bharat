@@ -113,5 +113,7 @@ export const CATEGORY_ICONS = {
 export const LS_KEYS = {
   USER_ID: 'harabharat_user_id',
   USER_NAME: 'harabharat_user_name',
+  USER_CITY: 'harabharat_user_city',
+  THEME: 'harabharat_theme',
   FORM_DRAFT: 'harabharat_form_draft',
 };
