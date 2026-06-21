@@ -24,8 +24,18 @@ model = genai.GenerativeModel(
 
 async def get_eco_mitra_response(
     user_message: str, 
-    user_context: dict = None
+    user_context: Optional[dict] = None
 ) -> str:
+    """
+    Generate a Hinglish response from Eco Mitra based on user message and context.
+
+    Args:
+        user_message: The query or message from the user.
+        user_context: Optional dictionary containing today's carbon footprints.
+
+    Returns:
+        Hinglish response string from Gemini.
+    """
     try:
         context_str = ""
         if user_context:
@@ -90,6 +100,15 @@ FALLBACK_CHALLENGES = [
 ]
 
 async def generate_weekly_report(weekly_data: str) -> str:
+    """
+    Generate a Hinglish weekly sustainability report based on weekly data.
+
+    Args:
+        weekly_data: String description of the user's weekly carbon emissions.
+
+    Returns:
+        Weekly sustainability report text in Hinglish.
+    """
     if not GEMINI_API_KEY:
         return (
             "Is hafte aapne kaafi acha kiya! 🌿 "
@@ -118,6 +137,16 @@ async def generate_weekly_report(weekly_data: str) -> str:
         )
 
 async def generate_daily_challenges(weakest_category: str, total_co2: float) -> list[dict]:
+    """
+    Generate exactly 3 daily eco-friendly challenges in Hinglish for a user.
+
+    Args:
+        weakest_category: The category where the user has the highest emissions.
+        total_co2: The total carbon footprint of the user today.
+
+    Returns:
+        List of challenge dictionaries.
+    """
     if not GEMINI_API_KEY:
         return FALLBACK_CHALLENGES
     try:
@@ -163,8 +192,18 @@ chat_with_eco_mitra = get_eco_mitra_response
 
 async def chat_with_eco_mitra_agent(
     user_message: str,
-    user_context_str: str = None
+    user_context_str: Optional[str] = None
 ) -> tuple[str, str, bool, dict, str]:
+    """
+    Chat with the Eco Mitra Carbon Logging Agent to parse activities and update context.
+
+    Args:
+        user_message: The raw natural language message from the user.
+        user_context_str: Optional JSON string of the current logging context.
+
+    Returns:
+        Tuple containing reply, intent, show_confirmation flag, updated pending activities, and new context string.
+    """
     import json
 
     # 1. Parse current context

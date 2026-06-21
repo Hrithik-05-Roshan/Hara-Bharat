@@ -21,6 +21,15 @@ class UserRegister(BaseModel):
     @field_validator("pin")
     @classmethod
     def pin_must_be_digits(cls, v: str) -> str:
+        """
+        Validate that the PIN contains only digits.
+
+        Args:
+            v: The PIN string value.
+
+        Returns:
+            The validated PIN string.
+        """
         if not v.isdigit():
             raise ValueError("PIN mein sirf numbers hone chahiye")
         return v
@@ -28,6 +37,15 @@ class UserRegister(BaseModel):
     @field_validator("name")
     @classmethod
     def name_must_be_clean(cls, v: str) -> str:
+        """
+        Ensure the user name is not empty or containing only whitespace.
+
+        Args:
+            v: The user name string.
+
+        Returns:
+            The cleaned user name string.
+        """
         v = v.strip()
         if not v:
             raise ValueError("Naam khali nahi ho sakta")
@@ -43,6 +61,15 @@ class UserLogin(BaseModel):
     @field_validator("pin")
     @classmethod
     def pin_must_be_digits(cls, v: str) -> str:
+        """
+        Validate that the PIN contains only digits.
+
+        Args:
+            v: The PIN string value.
+
+        Returns:
+            The validated PIN string.
+        """
         if not v.isdigit():
             raise ValueError("PIN mein sirf numbers hone chahiye")
         return v

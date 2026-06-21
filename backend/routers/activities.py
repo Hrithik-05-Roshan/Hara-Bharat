@@ -25,11 +25,16 @@ router = APIRouter(prefix="/api/activities", tags=["Activities"])
 
 
 @router.post("/log", response_model=ActivityResponse, status_code=201)
-def log_activity(data: ActivityLog, db: Session = Depends(get_db)):
+def log_activity(data: ActivityLog, db: Session = Depends(get_db)) -> ActivityResponse:
     """
     Log daily carbon footprint activity.
-    Calculates CO2 emissions server-side and stores with breakdown.
-    Awards badges if conditions are met.
+
+    Args:
+        data: The input activity log.
+        db: The database session.
+
+    Returns:
+        ActivityResponse containing total CO2 and breakdown.
     """
     # Verify user exists
     user = db.query(User).filter(User.id == data.user_id).first()
@@ -148,8 +153,17 @@ def log_activity(data: ActivityLog, db: Session = Depends(get_db)):
 
 
 @router.get("/{user_id}/today", response_model=ActivityResponse)
-def get_today_activity(user_id: str, db: Session = Depends(get_db)):
-    """Get today's activity log for a user."""
+def get_today_activity(user_id: str, db: Session = Depends(get_db)) -> ActivityResponse:
+    """
+    Get today's activity log for a user.
+
+    Args:
+        user_id: The user ID to get activity for.
+        db: The database session.
+
+    Returns:
+        ActivityResponse for today's log.
+    """
     activity = (
         db.query(Activity)
         .filter(Activity.user_id == user_id, Activity.log_date == date.today())
@@ -187,8 +201,18 @@ def get_activity_history(
     user_id: str,
     days: int = Query(default=30, ge=1, le=365),
     db: Session = Depends(get_db),
-):
-    """Get activity history for the past N days (default 30, max 365)."""
+) -> list[ActivityHistoryItem]:
+    """
+    Get activity history for the past N days.
+
+    Args:
+        user_id: The user ID to query.
+        days: Number of days to retrieve.
+        db: The database session.
+
+    Returns:
+        List of activity history items.
+    """
     start_date = date.today() - timedelta(days=days)
 
     activities = (
@@ -216,10 +240,16 @@ def get_activity_history(
 
 
 @router.get("/dashboard/{user_id}/summary", response_model=DashboardSummary)
-def get_dashboard_summary(user_id: str, db: Session = Depends(get_db)):
+def get_dashboard_summary(user_id: str, db: Session = Depends(get_db)) -> DashboardSummary:
     """
-    Get dashboard summary including today's score,
-    weekly average, streak, XP, and badge count.
+    Get dashboard summary including today's score, weekly average, streak, XP, and badge count.
+
+    Args:
+        user_id: The user ID.
+        db: The database session.
+
+    Returns:
+        DashboardSummary object.
     """
     user = db.query(User).filter(User.id == user_id).first()
     if not user:

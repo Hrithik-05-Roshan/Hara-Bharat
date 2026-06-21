@@ -16,7 +16,12 @@ from database import Base
 
 
 def generate_uuid() -> str:
-    """Generate a new UUID4 string."""
+    """
+    Generate a new UUID4 string.
+
+    Returns:
+        A unique UUID4 string.
+    """
     return str(uuid.uuid4())
 
 

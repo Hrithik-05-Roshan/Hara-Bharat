@@ -17,7 +17,16 @@ router = APIRouter(prefix="/api/challenges", tags=["Challenges"])
 
 
 def _get_weakest_category(db: Session, user_id: str) -> str:
-    """Determine user's highest-emission category from recent activity."""
+    """
+    Determine user's highest-emission category from recent activity.
+
+    Args:
+        db: The database session.
+        user_id: The unique user ID.
+
+    Returns:
+        Name of the highest-emission category.
+    """
     recent = (
         db.query(Activity)
         .filter(Activity.user_id == user_id)
@@ -40,10 +49,16 @@ def _get_weakest_category(db: Session, user_id: str) -> str:
 
 
 @router.get("/{user_id}/today", response_model=list[ChallengeResponse])
-async def get_today_challenges(user_id: str, db: Session = Depends(get_db)):
+async def get_today_challenges(user_id: str, db: Session = Depends(get_db)) -> list[ChallengeResponse]:
     """
     Get today's 3 daily challenges for a user.
-    Generates new ones if none exist for today.
+
+    Args:
+        user_id: The unique user ID.
+        db: The database session.
+
+    Returns:
+        List of ChallengeResponse objects.
     """
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -120,8 +135,18 @@ def complete_challenge(
     user_id: str,
     challenge_id: str,
     db: Session = Depends(get_db),
-):
-    """Mark a challenge as completed and award XP."""
+) -> dict:
+    """
+    Mark a challenge as completed and award XP.
+
+    Args:
+        user_id: The unique user ID.
+        challenge_id: The challenge ID.
+        db: The database session.
+
+    Returns:
+        Dictionary with message, xp_earned, and all_completed flag.
+    """
     challenge = (
         db.query(Challenge)
         .filter(
@@ -173,8 +198,17 @@ def complete_challenge(
 
 
 @router.get("/{user_id}/history", response_model=list[ChallengeResponse])
-def get_challenge_history(user_id: str, db: Session = Depends(get_db)):
-    """Get last 7 days of challenge history."""
+def get_challenge_history(user_id: str, db: Session = Depends(get_db)) -> list[ChallengeResponse]:
+    """
+    Get last 7 days of challenge history.
+
+    Args:
+        user_id: The unique user ID.
+        db: The database session.
+
+    Returns:
+        List of ChallengeResponse objects.
+    """
     start_date = date.today() - timedelta(days=7)
 
     challenges = (

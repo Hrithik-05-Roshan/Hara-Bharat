@@ -48,7 +48,12 @@ BADGE_DEFINITIONS = {
 
 
 def get_all_badge_definitions() -> list[dict]:
-    """Return all badge definitions with unlocked status defaulting to False."""
+    """
+    Return all badge definitions with unlocked status defaulting to False.
+
+    Returns:
+        List of dictionaries representing badge definitions.
+    """
     result = []
     for key, badge_def in BADGE_DEFINITIONS.items():
         result.append({
@@ -63,7 +68,17 @@ def get_all_badge_definitions() -> list[dict]:
 
 
 def has_badge(db: Session, user_id: str, badge_key: str) -> bool:
-    """Check if user already has a specific badge."""
+    """
+    Check if user already has a specific badge.
+
+    Args:
+        db: The database session.
+        user_id: The unique ID of the user.
+        badge_key: The identifier of the badge.
+
+    Returns:
+        True if the user has the badge, False otherwise.
+    """
     return (
         db.query(Badge)
         .filter(Badge.user_id == user_id, Badge.badge_key == badge_key)
@@ -73,7 +88,17 @@ def has_badge(db: Session, user_id: str, badge_key: str) -> bool:
 
 
 def award_badge(db: Session, user_id: str, badge_key: str) -> Optional[Badge]:
-    """Award a badge to a user if they don't already have it."""
+    """
+    Award a badge to a user if they don't already have it.
+
+    Args:
+        db: The database session.
+        user_id: The unique ID of the user.
+        badge_key: The identifier of the badge.
+
+    Returns:
+        The awarded Badge instance or None.
+    """
     if badge_key not in BADGE_DEFINITIONS:
         return None
 
@@ -104,7 +129,13 @@ def award_badge(db: Session, user_id: str, badge_key: str) -> Optional[Badge]:
 def check_and_award_badges(db: Session, user_id: str) -> list[Badge]:
     """
     Check all badge conditions and award any newly earned badges.
-    Called after every activity log submission.
+
+    Args:
+        db: The database session.
+        user_id: The unique ID of the user.
+
+    Returns:
+        List of awarded Badge instances.
     """
     awarded = []
 
@@ -181,7 +212,13 @@ def check_and_award_badges(db: Session, user_id: str) -> list[Badge]:
 def get_user_badges(db: Session, user_id: str) -> list[dict]:
     """
     Get all badge definitions with user's unlock status.
-    Unlocked badges show earned_at timestamp; locked ones are greyed out.
+
+    Args:
+        db: The database session.
+        user_id: The unique ID of the user.
+
+    Returns:
+        List of dictionaries representing the user's badges.
     """
     earned = (
         db.query(Badge)

@@ -42,7 +42,20 @@ def calculate_transport_co2(
     auto_km: float = 0.0,
     walk_km: float = 0.0,
 ) -> float:
-    """Calculate transport category CO2 emissions in kg."""
+    """
+    Calculate transport category CO2 emissions in kg.
+
+    Args:
+        car_km: Distance in km by car.
+        bike_km: Distance in km by bike.
+        bus_km: Distance in km by bus.
+        train_km: Distance in km by train.
+        auto_km: Distance in km by auto-rickshaw.
+        walk_km: Distance in km walked/cycled.
+
+    Returns:
+        Rounded transport carbon footprint.
+    """
     total = (
         car_km * EMISSION_FACTORS["car"]
         + bike_km * EMISSION_FACTORS["bike"]
@@ -60,7 +73,18 @@ def calculate_food_co2(
     packaged_meals: int = 0,
     homemade_meals: int = 0,
 ) -> float:
-    """Calculate food category CO2 emissions in kg."""
+    """
+    Calculate food category CO2 emissions in kg.
+
+    Args:
+        nonveg_meals: Number of non-vegetarian meals.
+        veg_meals: Number of vegetarian meals.
+        packaged_meals: Number of packaged meals.
+        homemade_meals: Number of homemade meals.
+
+    Returns:
+        Rounded food carbon footprint.
+    """
     total = (
         nonveg_meals * EMISSION_FACTORS["nonveg_meal"]
         + veg_meals * EMISSION_FACTORS["veg_meal"]
@@ -76,7 +100,18 @@ def calculate_energy_co2(
     washing_loads: int = 0,
     fan_lights_hours: float = 0.0,
 ) -> float:
-    """Calculate home energy category CO2 emissions in kg."""
+    """
+    Calculate home energy category CO2 emissions in kg.
+
+    Args:
+        ac_hours: Number of hours AC was running.
+        geyser_hours: Number of hours geyser was running.
+        washing_loads: Number of washing machine loads.
+        fan_lights_hours: Number of hours fan/lights were running.
+
+    Returns:
+        Rounded energy carbon footprint.
+    """
     total = (
         ac_hours * EMISSION_FACTORS["ac"]
         + geyser_hours * EMISSION_FACTORS["geyser"]
@@ -91,7 +126,17 @@ def calculate_waste_co2(
     delivery_orders: int = 0,
     recycling_done: bool = False,
 ) -> float:
-    """Calculate waste category CO2 emissions in kg."""
+    """
+    Calculate waste category CO2 emissions in kg.
+
+    Args:
+        plastic_items: Number of plastic items used.
+        delivery_orders: Number of online delivery orders.
+        recycling_done: Boolean indicating if recycling was done.
+
+    Returns:
+        Rounded waste carbon footprint.
+    """
     total = (
         plastic_items * EMISSION_FACTORS["plastic_item"]
         + delivery_orders * EMISSION_FACTORS["delivery_order"]
@@ -107,16 +152,30 @@ def calculate_total_co2(
     energy_co2: float,
     waste_co2: float,
 ) -> float:
-    """Calculate total daily CO2 emissions in kg."""
+    """
+    Calculate total daily CO2 emissions in kg.
+
+    Args:
+        transport_co2: Transport carbon footprint in kg.
+        food_co2: Food carbon footprint in kg.
+        energy_co2: Energy carbon footprint in kg.
+        waste_co2: Waste carbon footprint in kg.
+
+    Returns:
+        Sum of all category footprints, rounded.
+    """
     return round(transport_co2 + food_co2 + energy_co2 + waste_co2, 2)
 
 
 def get_day_rating(total_kg: float) -> str:
     """
     Rate the day's carbon footprint.
-    Green: < 5 kg CO2
-    Yellow: 5–10 kg CO2
-    Red: > 10 kg CO2
+
+    Args:
+        total_kg: The total daily carbon footprint in kg.
+
+    Returns:
+        Rating as "green", "yellow", or "red".
     """
     if total_kg < 5.0:
         return "green"

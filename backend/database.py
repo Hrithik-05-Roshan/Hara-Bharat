@@ -15,9 +15,21 @@ engine = create_engine(
 )
 
 
+from typing import Any, Generator
+from sqlalchemy.orm import Session
+
 @event.listens_for(engine, "connect")
-def set_sqlite_pragma(dbapi_connection, _connection_record):
-    """Enable WAL mode and foreign keys for better SQLite performance."""
+def set_sqlite_pragma(dbapi_connection: Any, _connection_record: Any) -> None:
+    """
+    Enable WAL mode and foreign keys for better SQLite performance.
+
+    Args:
+        dbapi_connection: The connection object.
+        _connection_record: The connection record.
+
+    Returns:
+        None
+    """
     cursor = dbapi_connection.cursor()
     cursor.execute("PRAGMA journal_mode=WAL")
     cursor.execute("PRAGMA foreign_keys=ON")
@@ -32,8 +44,13 @@ class Base(DeclarativeBase):
     pass
 
 
-def get_db():
-    """Dependency that provides a database session per request."""
+def get_db() -> Generator[Session, None, None]:
+    """
+    Dependency that provides a database session per request.
+
+    Returns:
+        Generator yielding a database session.
+    """
     db = SessionLocal()
     try:
         yield db
@@ -41,7 +58,12 @@ def get_db():
         db.close()
 
 
-def init_db():
-    """Create all database tables."""
+def init_db() -> None:
+    """
+    Create all database tables.
+
+    Returns:
+        None
+    """
     import models
     Base.metadata.create_all(bind=engine)
