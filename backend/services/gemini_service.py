@@ -1,6 +1,7 @@
 # pyrefly: ignore [missing-import]
 import google.generativeai as genai
 import os
+from typing import Optional
 
 # pyrefly: ignore [missing-import]
 from dotenv import load_dotenv
