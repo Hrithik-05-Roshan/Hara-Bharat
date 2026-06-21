@@ -4,6 +4,12 @@ import { Link } from 'react-router-dom'
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 // Inline Leaflet Map component to avoid heavy external bundles
+/**
+ * LeafletMap - Inline map component that dynamically imports and loads Leaflet library to display markers.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function LeafletMap({ lat, lng, spots }) {
   const mapRef = useRef(null)
   const mapInstanceRef = useRef(null)
@@ -86,6 +92,12 @@ function LeafletMap({ lat, lng, spots }) {
   )
 }
 
+/**
+ * LocationPage - Page component showing the local environmental weather, AQI, comparison statistics, and action challenges.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function LocationPage({ userId }) {
   // Initialize state
   const [city, setCity] = useState(() => localStorage.getItem('userCity') || 'Kolkata')

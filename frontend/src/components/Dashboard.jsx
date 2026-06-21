@@ -25,6 +25,12 @@ ChartJS.register(
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 // CountUp Component for micro-animations (Section 11)
+/**
+ * CountUp - Animates a numeric value up to a target number.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function CountUp({ to, decimals = 1, suffix = '' }) {
   const isTest = typeof window === 'undefined' || 
                  (typeof navigator !== 'undefined' && navigator.userAgent && navigator.userAgent.includes('jsdom')) ||
@@ -63,6 +69,12 @@ function CountUp({ to, decimals = 1, suffix = '' }) {
 }
 
 // Sparkline component inside Card 1 (Section 5)
+/**
+ * Sparkline - Renders a simple, compact line chart showing weekly carbon emission trends.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function Sparkline({ data = [] }) {
   const chartData = {
     labels: data.map((_, i) => i),
@@ -99,6 +111,12 @@ function Sparkline({ data = [] }) {
   )
 }
 
+/**
+ * Dashboard - The dashboard panel displaying user statistics, carbon score, history, and weekly progress.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function Dashboard({ userId, userName }) {
   const [summary, setSummary] = useState(null)
   const [history, setHistory] = useState([])

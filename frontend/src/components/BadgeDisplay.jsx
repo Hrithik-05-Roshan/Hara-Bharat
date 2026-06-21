@@ -1,6 +1,12 @@
 import { useState, useEffect, memo } from 'react'
 import { API_BASE_URL, ALL_BADGES } from '../utils/constants'
 
+/**
+ * BadgeDisplay - Renders the user's gamification badges showing unlocked and locked status.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function BadgeDisplay({ userId }) {
   const [badges, setBadges] = useState(ALL_BADGES.map(b => ({ ...b, is_unlocked: false, earned_at: null })))
 

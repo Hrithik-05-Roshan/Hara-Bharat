@@ -4,6 +4,12 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, ArcElement, Title, Tooltip, Legend, Filler)
 
+/**
+ * CarbonChart - Renders line and doughnut charts representing carbon emission trends and breakdown.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function CarbonChart({ history = [], todayBreakdown = null }) {
   const lineData = useMemo(() => {
     if (!history.length) return null

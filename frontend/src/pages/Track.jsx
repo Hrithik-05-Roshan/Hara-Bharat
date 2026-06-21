@@ -31,6 +31,12 @@ const FACTORS = {
   recycling: -0.3
 }
 
+/**
+ * Track - Page component that provides inputs for logging transport, food, energy, and waste activities.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function Track({ userId }) {
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('transport') // 'transport', 'food', 'energy', 'waste'

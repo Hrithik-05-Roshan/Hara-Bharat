@@ -37,6 +37,12 @@ const SECTIONS = [
   ]},
 ]
 
+/**
+ * FootprintForm - Renders the daily carbon footprint input questionnaire form.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function FootprintForm({ userId, onSubmitSuccess }) {
   const [formData, setFormData] = useState(() => {
     const draft = localStorage.getItem(LS_KEYS.FORM_DRAFT)

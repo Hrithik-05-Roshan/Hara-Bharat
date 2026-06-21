@@ -34,8 +34,16 @@ class WeatherResponse(BaseModel):
     risk: str
 
 @router.get("/weather", response_model=WeatherResponse)
-def get_city_weather(city: str):
-    """Retrieve weather & AQI for a city, with dynamic simulation for fallback."""
+def get_city_weather(city: str) -> WeatherResponse:
+    """
+    Retrieve weather & AQI for a city, with dynamic simulation for fallback.
+
+    Args:
+        city: The name of the city.
+
+    Returns:
+        WeatherResponse object containing weather and AQI metrics.
+    """
     city_key = city.strip().lower()
     
     # Check if we have pre-configured values, otherwise generate plausible values
@@ -89,8 +97,16 @@ class InsightsResponse(BaseModel):
     recommendation: str
 
 @router.post("/insights", response_model=InsightsResponse)
-async def get_location_insights(data: InsightsRequest):
-    """Generate localized AI insights using Gemini."""
+async def get_location_insights(data: InsightsRequest) -> InsightsResponse:
+    """
+    Generate localized AI insights using Gemini.
+
+    Args:
+        data: InsightsRequest payload.
+
+    Returns:
+        InsightsResponse containing recommendation text.
+    """
     GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
     
     if not GEMINI_API_KEY:
@@ -161,8 +177,16 @@ DEFAULT_CHALLENGES = [
 ]
 
 @router.get("/challenges", response_model=ChallengesResponse)
-def get_location_challenges(city: str):
-    """Retrieve city-specific eco challenges."""
+def get_location_challenges(city: str) -> ChallengesResponse:
+    """
+    Retrieve city-specific eco challenges.
+
+    Args:
+        city: The name of the city.
+
+    Returns:
+        ChallengesResponse listing eco challenges.
+    """
     city_key = city.strip().lower()
     challenges = CITY_SPECIFIC_CHALLENGES.get(city_key, DEFAULT_CHALLENGES)
     
@@ -180,8 +204,17 @@ class ComparisonResponse(BaseModel):
     ranking_badge: str
 
 @router.get("/comparison/{user_id}", response_model=ComparisonResponse)
-def get_user_city_comparison(user_id: str, db: Session = Depends(get_db)):
-    """Compare user's carbon metrics to city average and national data."""
+def get_user_city_comparison(user_id: str, db: Session = Depends(get_db)) -> ComparisonResponse:
+    """
+    Compare user's carbon metrics to city average and national data.
+
+    Args:
+        user_id: The unique user ID.
+        db: The database session.
+
+    Returns:
+        ComparisonResponse comparing metrics.
+    """
     # Find user
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
@@ -322,8 +355,16 @@ DEFAULT_MAP = {
 }
 
 @router.get("/green-spots", response_model=GreenSpotsResponse)
-def get_green_spots(city: str):
-    """Retrieve green spots map and markers list for a city."""
+def get_green_spots(city: str) -> GreenSpotsResponse:
+    """
+    Retrieve green spots map and markers list for a city.
+
+    Args:
+        city: The name of the city.
+
+    Returns:
+        GreenSpotsResponse listing green spots and center coordinates.
+    """
     city_key = city.strip().lower()
     map_data = CITY_MAPS.get(city_key, {
         "lat": DEFAULT_MAP["lat"] + (random.random() * 0.1 - 0.05) if city_key else DEFAULT_MAP["lat"],

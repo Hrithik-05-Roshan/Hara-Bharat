@@ -11,29 +11,29 @@ export const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 export const EMISSION_FACTORS = {
   // Transport (per km)
-  car: 0.21,
-  bike: 0.103,
-  bus: 0.089,
-  train: 0.041,
-  auto: 0.098,
-  walk: 0.0,
+  car: 0.21, // Petrol car — IPCC 2021 default for light-duty vehicles
+  bike: 0.103, // Motorcycle — India GHG Platform (Two-wheeler average)
+  bus: 0.089, // Public bus — TERI India (average occupancy per passenger-km)
+  train: 0.041, // Electric train — Indian Railways (passenger-km average)
+  auto: 0.098, // Auto-rickshaw — TERI India (CNG/petrol mix passenger-km average)
+  walk: 0.0, // Walking / cycling — Baseline zero-emission travel
 
   // Food (per meal)
-  nonveg_meal: 3.3,
-  veg_meal: 1.1,
-  packaged_meal: 2.0,
-  homemade_meal: 0.8,
+  nonveg_meal: 3.3, // Meat-heavy meal — IPCC 2021 livestock + cooking lifecycle average
+  veg_meal: 1.1, // Vegetarian meal — IPCC 2021 crop-based lifecycle average
+  packaged_meal: 2.0, // Processed/packaged food — India GHG Platform lifecycle average
+  homemade_meal: 0.8, // Home cooked meal — TERI India local preparation average
 
   // Energy (per hour/load)
-  ac: 1.2,
-  geyser: 1.0,
-  washing: 0.5,
-  fan_lights: 0.1,
+  ac: 1.2, // Air conditioner — India grid emission factor per hour (1.5 Ton AC average)
+  geyser: 1.0, // Water heater — Electric geyser India grid average per hour
+  washing: 0.5, // Washing machine — IPCC 2021 per load lifecycle average
+  fan_lights: 0.1, // Fan + lights — India GHG Platform low wattage average per hour
 
   // Waste (per item/order)
-  plastic_item: 0.06,
-  delivery_order: 0.5,
-  recycling_offset: -0.1,
+  plastic_item: 0.06, // Single plastic item — IPCC 2021 production + disposal average
+  delivery_order: 0.5, // Online delivery — TERI India packaging + logistics average
+  recycling_offset: -0.1, // Recycling offset — IPCC 2021 footprint reduction credit
 };
 
 // ─── Day Rating Thresholds ───

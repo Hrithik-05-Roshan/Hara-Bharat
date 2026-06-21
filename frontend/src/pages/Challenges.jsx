@@ -2,6 +2,12 @@ import { useState, useEffect, useCallback } from 'react'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
+/**
+ * Challenges - Page component displaying the daily eco challenges and gamified badges.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function Challenges({ userId }) {
   const [challenges, setChallenges] = useState([])
   const [badges, setBadges] = useState([])

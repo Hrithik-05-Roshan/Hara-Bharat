@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom'
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
+/**
+ * Onboard - Onboarding and authentication page handling user registration and login via PIN.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function Onboard({ onAuth }) {
   const [mode, setMode] = useState('register') // 'register' or 'login'
   const [name, setName] = useState('')

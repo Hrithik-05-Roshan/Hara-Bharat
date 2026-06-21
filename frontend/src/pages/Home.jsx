@@ -1,6 +1,12 @@
 import { Link } from 'react-router-dom'
 import { useEffect } from 'react'
 
+/**
+ * Home - Landing page component of the HaraBharat application describing its features and how it works.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function Home() {
   // Page transition effect
   useEffect(() => {

@@ -29,6 +29,12 @@ const EMISSION_FACTORS = {
   recycling_offset: -0.1
 }
 
+/**
+ * ConfirmationCard - Renders a summary of parsed daily carbon activities for confirmation.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function ConfirmationCard({ pendingActivities, onConfirm, onCancel, loading }) {
   const items = []
   let totalCO2 = 0
@@ -196,6 +202,12 @@ function ConfirmationCard({ pendingActivities, onConfirm, onCancel, loading }) {
   )
 }
 
+/**
+ * EcoMitraChat - Floating widget chatbot component that uses Gemini to chat and log carbon activities.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function EcoMitraChat({ userId }) {
   const [isOpen, setIsOpen] = useState(false)
   const [chatContext, setChatContext] = useState(null)

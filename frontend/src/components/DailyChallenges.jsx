@@ -1,6 +1,12 @@
 import { useState, useEffect, useCallback, memo } from 'react'
 import { API_BASE_URL } from '../utils/constants'
 
+/**
+ * DailyChallenges - Component to display and manage the user's daily eco challenges.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function DailyChallenges({ userId }) {
   const [challenges, setChallenges] = useState([])
   const [loading, setLoading] = useState(true)

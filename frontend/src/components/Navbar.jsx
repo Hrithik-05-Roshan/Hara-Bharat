@@ -13,6 +13,12 @@ const NAV_ITEMS = [
   { to: '/insights', label: 'Insights', icon: '📈' },
 ]
 
+/**
+ * Navbar - Navigation bar component rendering header and footer menus depending on viewport size.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function Navbar({ userId, userName, onLogout }) {
   const location = useLocation()
   const navigate = useNavigate()

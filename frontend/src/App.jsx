@@ -19,6 +19,12 @@ import { LS_KEYS } from './utils/constants'
   }
 })()
 
+/**
+ * App - The main application component for the HaraBharat app.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function App() {
   const [userId, setUserId] = useState(() => localStorage.getItem(LS_KEYS.USER_ID) || '')
   const [userName, setUserName] = useState(() => localStorage.getItem(LS_KEYS.USER_NAME) || '')

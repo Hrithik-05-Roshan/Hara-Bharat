@@ -21,6 +21,12 @@ ChartJS.register(
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
+/**
+ * Insights - Page component visualizing the 30-day carbon journey and displaying the AI-generated weekly report.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function Insights({ userId }) {
   const [history, setHistory] = useState([])
   const [report, setReport] = useState(null)

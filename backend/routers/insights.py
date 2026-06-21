@@ -17,10 +17,16 @@ router = APIRouter(prefix="/api/insights", tags=["Insights"])
 
 
 @router.get("/{user_id}/weekly-report", response_model=WeeklyReportResponse)
-async def get_weekly_report(user_id: str, db: Session = Depends(get_db)):
+async def get_weekly_report(user_id: str, db: Session = Depends(get_db)) -> WeeklyReportResponse:
     """
     Generate or retrieve this week's AI-powered sustainability report.
-    Generated once per week and cached in DB.
+
+    Args:
+        user_id: The unique user ID.
+        db: The database session.
+
+    Returns:
+        WeeklyReportResponse object containing the report details.
     """
     user = db.query(User).filter(User.id == user_id).first()
     if not user:

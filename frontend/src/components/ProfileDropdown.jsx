@@ -1,6 +1,12 @@
 import { useState, useEffect, useRef, memo } from 'react'
 import { API_BASE_URL, LS_KEYS } from '../utils/constants'
 
+/**
+ * ProfileDropdown - Component displaying the user profile quick details, stats, theme toggle, and settings.
+ * 
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} Rendered component
+ */
 function ProfileDropdown({ userId, userName, streak, onLogout, onClose }) {
   const [profileData, setProfileData] = useState(null)
   const [summaryData, setSummaryData] = useState(null)
